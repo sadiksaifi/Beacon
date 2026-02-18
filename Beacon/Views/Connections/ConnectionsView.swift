@@ -6,6 +6,7 @@ struct ConnectionsView: View {
 
     @State private var connectionToEdit: Connection?
     @State private var isAddingConnection = false
+    @State private var connectionService = SSHConnectionService()
 
     var body: some View {
         NavigationStack {
@@ -15,10 +16,13 @@ struct ConnectionsView: View {
                         isAddingConnection = true
                     }
                 } else {
-                    ConnectionListView(selectedConnection: $connectionToEdit)
+                    ConnectionListView(connectionToEdit: $connectionToEdit)
                 }
             }
             .navigationTitle("Connections")
+            .navigationDestination(for: Connection.self) { connection in
+                SSHSessionView(connection: connection)
+            }
             .toolbar {
                 if !connections.isEmpty {
                     ToolbarItem(placement: .primaryAction) {
@@ -36,6 +40,7 @@ struct ConnectionsView: View {
                 ConnectionFormView(connection: connection)
             }
         }
+        .environment(connectionService)
     }
 }
 

@@ -2,26 +2,35 @@ import SwiftData
 import SwiftUI
 
 /// Displays all saved connections in a scrollable list.
+///
+/// Tapping a row navigates to `SSHSessionView` (connect).
+/// Swipe actions provide Edit and Delete.
 struct ConnectionListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Connection.label) private var connections: [Connection]
 
-    @Binding var selectedConnection: Connection?
+    @Binding var connectionToEdit: Connection?
 
     var body: some View {
         List {
             ForEach(connections) { connection in
-                Button {
-                    selectedConnection = connection
-                } label: {
+                NavigationLink(value: connection) {
                     ConnectionRow(connection: connection)
                 }
+                .accessibilityHint("Double tap to connect")
                 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        Button("Delete", systemImage: "trash", role: .destructive) {
-                            delete(connection)
-                        }
-                        .accessibilityLabel("Delete connection")
+                    Button("Delete", systemImage: "trash", role: .destructive) {
+                        delete(connection)
                     }
+                    .accessibilityLabel("Delete connection")
+                }
+                .swipeActions(edge: .trailing) {
+                    Button("Edit", systemImage: "pencil") {
+                        connectionToEdit = connection
+                    }
+                    .tint(.orange)
+                    .accessibilityLabel("Edit connection")
+                }
             }
         }
     }

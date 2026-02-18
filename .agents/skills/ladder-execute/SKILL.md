@@ -42,6 +42,15 @@ Implement a phase spec one step at a time with plan mode, commit discipline, pro
 4. **User approval before execution** — confirm plan before beginning.
 5. **One step, one commit** — each step gets exactly one commit.
 6. **Delegate to preserve context** — medium and large steps run in sub-agents. The main agent orchestrates; sub-agents implement.
+7. **Progress and commit are part of the step, not after it** — a step is not complete until progress.md is updated AND the atomic commit is made. Never proceed to the next step without both.
+
+## Execution Checkpoints
+
+**After Every Step:**
+1. Acceptance criteria verified with evidence → 2. progress.md updated (status "done") → 3. Atomic commit (code + progress.md) → 4. SHA recorded in progress.md → **THEN** proceed to next step
+
+**After All Steps (Phase Completion):**
+1. Exit criteria verified → 2. progress.md finalized (status "done", Completed date) → 3. OVERVIEW.md Phase Registry updated → 4. Final commit (progress.md + OVERVIEW.md) → **THEN** suggest next phase
 
 ## Hard Gates
 
@@ -69,6 +78,14 @@ SPEC IMMUTABILITY: Do NOT edit the spec file during execution. If a deviation is
 CONTEXT ISOLATION: For steps with complexity "medium" or "large", you MUST delegate to a sub-agent via Task tool unless the user explicitly opted out during plan approval. Inline execution of medium/large steps wastes main context and degrades quality on later steps.
 </HARD-GATE>
 
+<HARD-GATE>
+STEP COMPLETION: A step is NOT complete until: (1) acceptance criteria verified with evidence, (2) progress.md updated with status "done", (3) atomic commit made containing both code changes + progress.md. Do NOT begin the next step until all three are confirmed. Self-monitoring: if you find yourself thinking "I'll update progress.md later" or "I'll batch commits" — STOP. Complete the protocol now.
+</HARD-GATE>
+
+<HARD-GATE>
+PHASE COMPLETION: A phase is NOT complete until: (1) progress.md finalized with status "done" and Completed date, (2) OVERVIEW.md Phase Registry updated with status "done", (3) final commit made containing both progress.md + OVERVIEW.md. Do NOT print next-phase suggestion until all three are confirmed.
+</HARD-GATE>
+
 ## Pre-Execution Checklist
 
 Before starting, verify:
@@ -78,6 +95,7 @@ Before starting, verify:
 - [ ] Spec passes all 5 validation rules
 - [ ] All entry criteria are met
 - [ ] Plan mode approved by user
+- [ ] Plan will include per-step protocol (progress update + commit) for every step
 
 ## Workflow
 
@@ -146,6 +164,26 @@ Build the plan from the spec's Step Sequence:
 - **Inline only** for "small" complexity steps or steps the user explicitly opts out of delegation
 - Present each step's execution mode (delegated/inline) in the plan for user approval
 
+**CRITICAL — Per-Step Protocol:** Every step in the plan MUST end with these explicit mandatory actions written out for every single step (not summarized, not "repeat for all steps"):
+```
+After implementing S<N>:
+  1. Verify all acceptance criteria (run commands, show output)
+  2. Update progress.md: set S<N> status to "done", add notes if deviations
+  3. Commit: stage code changes + progress.md together
+     Message: type(L<N>-S<N>): description
+  4. Record commit SHA in progress.md Commit column
+```
+
+**CRITICAL — Phase Completion Protocol:** After the last step, the plan MUST include:
+```
+After all steps complete:
+  1. Validate all exit criteria from spec
+  2. Update progress.md: phase status "done", Completed date, Decisions, Blockers
+  3. Update OVERVIEW.md Phase Registry: set phase status to "done"
+  4. Final commit: stage progress.md + OVERVIEW.md together
+     Message: chore(L<N>): complete phase execution
+```
+
 Present the plan and ask the user:
 - Approve the plan as-is, OR
 - Reject delegation for specific steps (will run inline instead), OR
@@ -169,7 +207,9 @@ Print:
 
 Update progress.md step row: status = "in-progress".
 
-#### Step 9 — Implement or Delegate
+#### Step 9 — Implement, Verify, Record, Commit
+
+**A. Implement** (delegated or inline):
 
 **Delegated execution (default for medium + large steps):**
 1. Prepare a sub-agent context package following `references/delegation-context.md` — all context inlined in the prompt, no file path references
@@ -182,13 +222,13 @@ Update progress.md step row: status = "in-progress".
 2. Check each Acceptance criterion — run commands, show output
 3. If a criterion fails, fix before proceeding
 
-#### Step 10 — Update Progress
+**B. Update Progress:**
 
 Update `.ladder/progress.md` step row:
 - Status → "done"
 - Notes → any deviations from spec (empty if none)
 
-#### Step 11 — Commit Step
+**C. Atomic Commit:**
 
 Stage both the step's code changes AND `.ladder/progress.md`, then commit together:
 ```
@@ -199,19 +239,29 @@ Type selection: `feat` | `fix` | `refactor` | `test` | `chore` | `docs`
 
 Each step commit atomically captures the implementation and its progress entry. After committing, update the progress.md Commit column with the 7-char short SHA.
 
-#### Step 12 — Loop
+**D. Confirm completion before continuing:**
+
+- [ ] Acceptance criteria all passed with evidence
+- [ ] progress.md step row shows "done"
+- [ ] Commit exists with both code and progress.md
+- [ ] Commit SHA recorded in progress.md
+- → If any missing, complete it now. Do NOT proceed.
+
+#### Step 10 — Loop
 
 Return to Step 8 for the next step. If all steps complete, proceed to Phase 4.
 
 ### Phase 4: Phase Completion
 
-#### Step 13 — Validate Exit Criteria
+#### Step 11 — Validate Exit Criteria
 
 Check each exit criterion from the spec. If any criterion fails:
 1. Print which criteria failed
 2. Ask the user whether to fix now or mark as blocked
 
-#### Step 14 — Finalize Progress
+#### Step 12 — Finalize Progress and OVERVIEW
+
+**A. Update progress.md:**
 
 Update `.ladder/progress.md`:
 - Phase status → "done"
@@ -219,19 +269,25 @@ Update `.ladder/progress.md`:
 - Decisions → list any deviations recorded during execution, or "(none)"
 - Blockers → "(none)" if all exit criteria pass
 
-#### Step 15 — Update Phase Registry
+**B. Update OVERVIEW.md:**
 
 Update `.ladder/OVERVIEW.md` Phase Registry: set this phase's status to "done".
 
-#### Step 16 — Final Commit
+**C. Final Commit:**
 
+Stage both `.ladder/progress.md` and `.ladder/OVERVIEW.md`:
 ```
 chore(L<N>): complete phase execution
 ```
 
-Stage both `.ladder/progress.md` and `.ladder/OVERVIEW.md`.
+**D. Confirm phase closure:**
 
-#### Step 17 — Next Phase Suggestion
+- [ ] progress.md phase status is "done" with Completed date
+- [ ] OVERVIEW.md Phase Registry shows phase as "done"
+- [ ] Final commit contains both files
+- → Do NOT print next-phase suggestion until confirmed.
+
+#### Step 13 — Next Phase Suggestion
 
 Print:
 > "Phase L-<N> complete. Next: `/ladder-execute <next-spec-path>` or `/ladder-create` for a new phase."
@@ -257,7 +313,8 @@ Print:
 | Marking criteria met without evidence | No proof the code works | Run the command, show the output (Hard Gate) |
 | Editing the spec during execution | Violates immutability | Log deviations in progress.md Decisions |
 | Skipping plan mode | User can't review approach | EnterPlanMode is a HARD GATE |
-| Deferring progress.md to phase completion | Progress.md out of sync, resume detection breaks | Include progress.md update in each step commit |
+| Deferring progress.md to phase completion | Progress.md out of sync, resume detection breaks | Complete Step 9B-9C before proceeding (STEP COMPLETION hard gate) |
+| Forgetting OVERVIEW.md update at phase end | Phase Registry out of sync, next phase entry criteria may fail | Complete Step 12B-12C before next-phase suggestion (PHASE COMPLETION hard gate) |
 | Continuing past failed entry criteria | Building on unstable foundation | STOP and resolve prerequisites first |
 | Running medium/large steps inline | Context rot degrades later steps | Delegate via Task tool (Hard Gate) |
 | Sending file paths instead of content to sub-agent | Sub-agent wastes turns reading files | Inline ALL context in the prompt |
@@ -274,6 +331,8 @@ Print:
 | "I'll update progress.md later" | Update after every step — it's the source of truth |
 | "I'll just do this inline, it's faster" | Delegation prevents context rot — speed now means degraded quality later |
 | "The sub-agent might miss context" | That's why you package full context and verify independently after |
+| "I'll commit everything at the end" | Each step gets its own atomic commit — STEP COMPLETION hard gate |
+| "OVERVIEW.md can wait" | Phase is NOT complete until OVERVIEW.md is committed — PHASE COMPLETION hard gate |
 
 ## Integration
 

@@ -3,10 +3,14 @@
 // TODO: Remove @preconcurrency when Citadel adds Sendable conformance.
 @preconcurrency import Citadel
 import Foundation
+import NIOSSH
 import NIOCore
 
 /// Error thrown when the SSH connection exceeds the configured timeout.
 struct ConnectionTimeoutError: Error {}
+
+/// Error thrown when a host key is rejected by the validator.
+struct HostKeyRejectedError: Error {}
 
 /// Wraps Citadel's `SSHClient` with observable connection state and timeout logic.
 @MainActor @Observable
@@ -55,7 +59,7 @@ final class SSHConnectionService {
                         username: username,
                         password: password
                     ),
-                    hostKeyValidator: .acceptAnything(),
+                    hostKeyValidator: .custom(RejectAllHostKeyDelegate()),
                     reconnect: .never,
                     connectTimeout: .seconds(nioTimeoutSeconds)
                 )
@@ -106,5 +110,18 @@ final class SSHConnectionService {
         connectTask?.cancel()
         connectTask = nil
         status = .idle
+    }
+}
+
+// MARK: - Temporary Reject-All Delegate (replaced in S3)
+
+/// Placeholder host key validator that rejects all keys.
+/// Replaced by `HostKeyValidatorDelegate` in step S3.
+private final class RejectAllHostKeyDelegate: NIOSSHClientServerAuthenticationDelegate, @unchecked Sendable {
+    func validateHostKey(
+        hostKey: NIOSSHPublicKey,
+        validationCompletePromise: EventLoopPromise<Void>
+    ) {
+        validationCompletePromise.fail(HostKeyRejectedError())
     }
 }

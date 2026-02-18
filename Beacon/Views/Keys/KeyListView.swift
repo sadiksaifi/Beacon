@@ -41,7 +41,7 @@ struct KeyListView: View {
                 }
             }
             .sheet(isPresented: $showGenerateSheet) {
-                Text("TODO")
+                KeyGenerationView()
             }
             .sheet(isPresented: $showImportSheet) {
                 Text("TODO")

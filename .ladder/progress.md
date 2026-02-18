@@ -65,7 +65,7 @@
 
 | Step | Description | Status | Commit | Notes |
 |------|-------------|--------|--------|-------|
-| S1 | Add Citadel SPM dependency | done | | |
+| S1 | Add Citadel SPM dependency | done | de7a3db | |
 | S2 | Create SSH connection service wrapping Citadel client | done | | |
 | S3 | Implement connection state machine with bounded timeout | done | | |
 | S4 | Add connect action from connection list | done | | |

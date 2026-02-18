@@ -8,6 +8,11 @@ struct MainTabView: View {
             }
             .accessibilityLabel("Connections tab")
 
+            Tab("Keys", systemImage: "key.fill") {
+                KeyListView()
+            }
+            .accessibilityLabel("Keys tab")
+
             Tab("Settings", systemImage: "gear") {
                 SettingsView()
             }

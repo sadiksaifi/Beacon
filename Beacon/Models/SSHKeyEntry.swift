@@ -2,7 +2,7 @@ import Foundation
 
 /// Metadata for a stored SSH key pair. The private key lives in the Keychain;
 /// this struct holds everything else and is persisted as JSON in UserDefaults.
-struct SSHKeyEntry: Codable, Identifiable {
+struct SSHKeyEntry: Codable, Identifiable, Hashable {
     /// Stable identifier, also used to derive the Keychain item key.
     var id: UUID = UUID()
 

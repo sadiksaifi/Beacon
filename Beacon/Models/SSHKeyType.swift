@@ -1,7 +1,7 @@
 import Foundation
 
 /// The cryptographic algorithm of an SSH key pair.
-enum SSHKeyType: String, Codable, CaseIterable, Identifiable {
+enum SSHKeyType: String, Codable, CaseIterable, Identifiable, Hashable {
     case ed25519
     case ecdsaP256
     case rsa

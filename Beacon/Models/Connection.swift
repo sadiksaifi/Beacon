@@ -4,6 +4,9 @@ import SwiftData
 /// A persisted SSH connection configuration.
 @Model
 final class Connection {
+    /// Stable identifier used for Keychain keying. Survives SwiftData migrations.
+    var id: UUID = UUID()
+
     /// Display name for the connection. Optional; falls back to host if empty.
     var label: String = ""
 

@@ -70,8 +70,8 @@
 | S3 | Implement connection state machine with bounded timeout | done | 38e472a | |
 | S4 | Add connect action from connection list | done | 870be1c | |
 | S5 | Build SSHSessionView (connected-state placeholder) | done | fde9429 | |
-| S6 | Implement password prompt flow | done | | |
-| S7 | Add disconnect action | done | | Included in S5 commit |
+| S6 | Implement password prompt flow | done | 4f752bd | |
+| S7 | Add disconnect action | done | fde9429 | Included in S5 commit |
 | S8 | Implement Keychain password storage with biometric access control | done | | |
 | S9 | Add "Save password?" prompt after successful auth | done | | Included in S5 commit |
 | S10 | Map SSH errors to human-readable messages | done | | |

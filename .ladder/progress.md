@@ -51,8 +51,8 @@
 | S1 | Create Dockerfile with OpenSSH, tmux, bash, and test user | done | c233fb7 | |
 | S2 | Create docker-compose.yml with port mapping and health check | done | 66365dc | |
 | S3 | Create start-harness.sh and stop-harness.sh scripts | done | 0987386 | |
-| S4 | Verify harness connectivity | done | | |
-| S5 | Write test-harness README | pending | | |
+| S4 | Verify harness connectivity | done | 15369ba | |
+| S5 | Write test-harness README | done | | |
 
 **Decisions:**
 **Blockers:**

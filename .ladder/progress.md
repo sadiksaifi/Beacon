@@ -56,3 +56,28 @@
 
 **Decisions:** (none)
 **Blockers:** (none)
+
+## L-03: SSH Connect & Password Auth
+
+**Status:** in-progress
+**Started:** 2026-02-18
+**Completed:**
+
+| Step | Description | Status | Commit | Notes |
+|------|-------------|--------|--------|-------|
+| S1 | Add Citadel SPM dependency | done | | |
+| S2 | Create SSH connection service wrapping Citadel client | done | | |
+| S3 | Implement connection state machine with bounded timeout | done | | |
+| S4 | Add connect action from connection list | done | | |
+| S5 | Build SSHSessionView (connected-state placeholder) | done | | |
+| S6 | Implement password prompt flow | done | | |
+| S7 | Add disconnect action | done | | Included in S5 commit |
+| S8 | Implement Keychain password storage with biometric access control | done | | |
+| S9 | Add "Save password?" prompt after successful auth | done | | Included in S5 commit |
+| S10 | Map SSH errors to human-readable messages | done | | |
+| S11 | Add VoiceOver labels for all states and actions | done | | Included in S5 commit |
+| S12 | Write integration tests against Docker harness | done | | |
+| S13 | Execute UAT checklist | pending | | |
+
+**Decisions:** Steps S7, S9, S11 were implemented inline within S5's SSHSessionView and subview files rather than as separate commits, since the view code was written holistically.
+**Blockers:** (none)

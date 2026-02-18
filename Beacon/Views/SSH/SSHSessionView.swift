@@ -222,18 +222,21 @@ struct SSHSessionView: View {
 
     /// Responds to I/O bridge status changes.
     ///
-    /// When the bridge disconnects or encounters an error, the session view
-    /// transitions to the failed state so the user sees feedback instead of
-    /// a frozen terminal.
+    /// When the bridge starts running, announces the session is active for
+    /// VoiceOver users. When the bridge disconnects or encounters an error,
+    /// the session view transitions to the failed state so the user sees
+    /// feedback instead of a frozen terminal.
     private func handleBridgeStatusChange(_ newStatus: TerminalIOBridge.Status) {
         switch newStatus {
+        case .running:
+            AccessibilityNotification.Announcement("Terminal session started").post()
         case .disconnected(let reason):
             guard connectionService.status == .connected else { return }
             connectionService.fail(message: "Connection lost: \(reason)")
         case .error(let message):
             guard connectionService.status == .connected else { return }
             connectionService.fail(message: message)
-        case .idle, .running:
+        case .idle:
             break
         }
     }

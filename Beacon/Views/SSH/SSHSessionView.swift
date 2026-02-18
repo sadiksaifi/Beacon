@@ -79,6 +79,22 @@ struct SSHSessionView: View {
         } message: {
             Text("Save password for future connections?")
         }
+        .sheet(
+            item: Binding<PendingHostKeyChallenge?>(
+                get: {
+                    guard let pending = connectionService.pendingHostKeyChallenge,
+                        pending.comparison == .unknown
+                    else { return nil }
+                    return pending
+                },
+                set: { _ in }
+            )
+        ) { pending in
+            UnknownHostPromptView(challenge: pending.challenge) { decision in
+                connectionService.resolveHostKeyChallenge(decision)
+            }
+            .interactiveDismissDisabled()
+        }
         .onChange(of: connectionService.status) { _, newStatus in
             announceStateChange(newStatus)
 

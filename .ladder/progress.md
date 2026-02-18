@@ -95,8 +95,8 @@
 | S3 | Implement host key callback in SSH connection service | done | f51759e | Created minimal FingerprintComparer and KnownHostsStore stubs needed for compilation |
 | S4 | Implement fingerprint comparison logic | done | 69f029f | Fully implemented in S3; no additional changes needed |
 | S5 | Implement known hosts Keychain storage | done | 0476204 | |
-| S6 | Implement Trust Once in-memory behavior | done | | |
-| S7 | Build unknown host trust prompt UI | pending | | |
+| S6 | Implement Trust Once in-memory behavior | done | 12c5b02 | |
+| S7 | Build unknown host trust prompt UI | done | | |
 | S8 | Build mismatch warning UI | pending | | |
 | S9 | Add VoiceOver labels to all prompt elements | pending | | |
 | S10 | Write integration tests against Docker harness | pending | | |

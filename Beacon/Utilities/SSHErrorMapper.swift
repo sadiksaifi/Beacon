@@ -12,6 +12,11 @@ enum SSHErrorMapper {
             return "Connection timed out"
         }
 
+        // Host key rejected by user or validator
+        if error is HostKeyRejectedError {
+            return "Host key rejected"
+        }
+
         // Citadel authentication failures
         if error is AuthenticationFailed {
             return "Authentication failed"

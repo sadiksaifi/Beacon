@@ -8,6 +8,7 @@ import SwiftUI
 /// Phase 6 will replace the connected-state placeholder with a terminal surface.
 struct SSHSessionView: View {
     @Environment(SSHConnectionService.self) private var connectionService
+    @Environment(SSHKeyStore.self) private var keyStore
     @Environment(\.dismiss) private var dismiss
 
     let connection: Connection
@@ -129,12 +130,39 @@ struct SSHSessionView: View {
     // MARK: - Connection Logic
 
     private func initiateConnection() async {
-        if let password = await KeychainService.retrieve(forConnectionID: connection.id) {
-            usedKeychainPassword = true
-            connectWith(password: password)
-        } else {
-            showPasswordPrompt = true
+        switch connection.authMethod {
+        case .password:
+            if let password = await KeychainService.retrieve(forConnectionID: connection.id) {
+                usedKeychainPassword = true
+                connectWith(password: password)
+            } else {
+                showPasswordPrompt = true
+            }
+        case .key:
+            await initiateKeyConnection()
         }
+    }
+
+    private func initiateKeyConnection() async {
+        guard let keyID = connection.selectedKeyID,
+              let entry = keyStore.entries.first(where: { $0.id == keyID })
+        else {
+            connectionService.fail(message: "SSH key not found. It may have been deleted.")
+            return
+        }
+
+        guard let privateKeyData = await keyStore.retrieve(keychainID: entry.keychainID) else {
+            connectionService.fail(message: "Authentication cancelled")
+            return
+        }
+
+        connectionService.connect(
+            host: connection.host,
+            port: connection.port,
+            username: connection.username,
+            privateKeyData: privateKeyData,
+            keyType: entry.keyType
+        )
     }
 
     private func connectWith(password: String) {

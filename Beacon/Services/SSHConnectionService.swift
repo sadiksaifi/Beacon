@@ -49,6 +49,16 @@ final class SSHConnectionService {
     private var connectTask: Task<Void, Never>?
     private var pendingContinuation: CheckedContinuation<TrustDecision, Never>?
 
+    // MARK: - Public Helpers
+
+    /// Transitions the service to a failed state with the given message.
+    ///
+    /// Used by callers (e.g. `SSHSessionView`) that detect pre-connection
+    /// failures such as a missing SSH key or cancelled biometric prompt.
+    func fail(message: String) {
+        status = .failed(message: message)
+    }
+
     // MARK: - Connect
 
     /// Initiates an SSH connection with the given credentials.
@@ -82,6 +92,71 @@ final class SSHConnectionService {
                         username: username,
                         password: password
                     ),
+                    hostKeyValidator: .custom(delegate),
+                    reconnect: .never,
+                    connectTimeout: .seconds(nioTimeoutSeconds)
+                )
+
+                timeoutTask.cancel()
+
+                if Task.isCancelled {
+                    try? await sshClient.close()
+                    if self.status == .connecting {
+                        self.status = .failed(message: "Connection timed out")
+                    }
+                    return
+                }
+
+                self.client = sshClient
+                self.status = .connected
+            } catch is CancellationError {
+                timeoutTask.cancel()
+                if self.status == .connecting {
+                    self.status = .failed(message: "Connection timed out")
+                }
+            } catch is HostKeyRejectedError {
+                timeoutTask.cancel()
+                if self.status == .connecting {
+                    self.status = .failed(message: "Host key rejected")
+                }
+            } catch {
+                timeoutTask.cancel()
+                self.status = .failed(message: SSHErrorMapper.message(for: error))
+            }
+        }
+    }
+
+    /// Initiates an SSH connection using key-based authentication.
+    ///
+    /// Reconstructs the CryptoKit private key from raw Keychain data based on
+    /// the key type, then races the SSH handshake against a configurable timeout.
+    func connect(host: String, port: Int, username: String, privateKeyData: Data, keyType: SSHKeyType) {
+        guard status == .idle || status.isFailed else { return }
+
+        status = .connecting
+
+        let delegate = HostKeyValidatorDelegate { hostKey in
+            await self.handleHostKey(hostKey, host: host, port: port)
+        }
+
+        connectTask = Task {
+            let timeoutTask = Task { [timeout] in
+                try await Task.sleep(for: timeout)
+                self.connectTask?.cancel()
+            }
+
+            do {
+                let authMethod: SSHAuthenticationMethod = try buildKeyAuthMethod(
+                    username: username,
+                    privateKeyData: privateKeyData,
+                    keyType: keyType
+                )
+
+                let nioTimeoutSeconds = Int64(timeout.components.seconds) + 5
+                let sshClient = try await SSHClient.connect(
+                    host: host,
+                    port: port,
+                    authenticationMethod: authMethod,
                     hostKeyValidator: .custom(delegate),
                     reconnect: .never,
                     connectTimeout: .seconds(nioTimeoutSeconds)
@@ -266,4 +341,39 @@ final class SSHConnectionService {
         default: algorithm
         }
     }
+
+    /// Reconstructs a CryptoKit private key from raw Keychain data and returns
+    /// the corresponding Citadel `SSHAuthenticationMethod`.
+    private func buildKeyAuthMethod(
+        username: String,
+        privateKeyData: Data,
+        keyType: SSHKeyType
+    ) throws -> SSHAuthenticationMethod {
+        switch keyType {
+        case .ed25519:
+            let privateKey = try Curve25519.Signing.PrivateKey(rawRepresentation: privateKeyData)
+            return .ed25519(username: username, privateKey: privateKey)
+
+        case .ecdsaP256:
+            let privateKey = try P256.Signing.PrivateKey(rawRepresentation: privateKeyData)
+            return .p256(username: username, privateKey: privateKey)
+
+        case .rsa:
+            // RSA keys are stored as the full OpenSSH key string encoded as Data.
+            guard let keyString = String(data: privateKeyData, encoding: .utf8) else {
+                throw SSHKeyReconstructionError.invalidKeyData
+            }
+            let privateKey = try Insecure.RSA.PrivateKey(sshRsa: keyString)
+            return .rsa(username: username, privateKey: privateKey)
+        }
+    }
+}
+
+/// Error thrown when stored private key data cannot be reconstructed.
+struct SSHKeyReconstructionError: Error, LocalizedError {
+    let errorDescription: String?
+
+    static let invalidKeyData = SSHKeyReconstructionError(
+        errorDescription: "The stored SSH key data is invalid and cannot be used for authentication."
+    )
 }

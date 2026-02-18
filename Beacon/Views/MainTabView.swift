@@ -6,10 +6,12 @@ struct MainTabView: View {
             Tab("Connections", systemImage: "network") {
                 ConnectionsView()
             }
+            .accessibilityLabel("Connections tab")
 
             Tab("Settings", systemImage: "gear") {
                 SettingsView()
             }
+            .accessibilityLabel("Settings tab")
         }
     }
 }

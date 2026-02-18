@@ -11,6 +11,7 @@ struct ConnectionsEmptyStateView: View {
         } actions: {
             Button("Add Connection", systemImage: "plus", action: onAddConnection)
                 .buttonStyle(.borderedProminent)
+                .accessibilityLabel("Add your first connection")
         }
     }
 }

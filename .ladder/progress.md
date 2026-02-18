@@ -42,9 +42,9 @@
 
 ## L-02: Docker Test Harness
 
-**Status:** in-progress
+**Status:** done
 **Started:** 2026-02-18
-**Completed:**
+**Completed:** 2026-02-18
 
 | Step | Description | Status | Commit | Notes |
 |------|-------------|--------|--------|-------|
@@ -52,7 +52,7 @@
 | S2 | Create docker-compose.yml with port mapping and health check | done | 66365dc | |
 | S3 | Create start-harness.sh and stop-harness.sh scripts | done | 0987386 | |
 | S4 | Verify harness connectivity | done | 15369ba | |
-| S5 | Write test-harness README | done | | |
+| S5 | Write test-harness README | done | 3b40611 | |
 
-**Decisions:**
-**Blockers:**
+**Decisions:** (none)
+**Blockers:** (none)

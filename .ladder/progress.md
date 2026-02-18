@@ -74,8 +74,8 @@
 | S7 | Add disconnect action | done | fde9429 | Included in S5 commit |
 | S8 | Implement Keychain password storage with biometric access control | done | 45336dc | |
 | S9 | Add "Save password?" prompt after successful auth | done | fde9429 | Included in S5 commit |
-| S10 | Map SSH errors to human-readable messages | done | | |
-| S11 | Add VoiceOver labels for all states and actions | done | | Included in S5 commit |
+| S10 | Map SSH errors to human-readable messages | done | 755009a | |
+| S11 | Add VoiceOver labels for all states and actions | done | fde9429 | Included in S5 commit |
 | S12 | Write integration tests against Docker harness | done | | |
 | S13 | Execute UAT checklist | pending | | |
 

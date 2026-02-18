@@ -34,6 +34,7 @@ struct SSHSessionView: View {
                 ConnectedStateView {
                     Task {
                         await connectionService.disconnect()
+                        dismiss()
                     }
                 }
 

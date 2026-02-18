@@ -79,5 +79,5 @@
 | S12 | Write integration tests against Docker harness | done | 0c25666 | |
 | S13 | Execute UAT checklist | done | | Verified via integration tests; manual simulator UAT deferred to user |
 
-**Decisions:** Steps S7, S9, S11 were implemented inline within S5's SSHSessionView and subview files rather than as separate commits, since the view code was written holistically.
+**Decisions:** Steps S7, S9, S11 were implemented inline within S5's SSHSessionView and subview files rather than as separate commits, since the view code was written holistically. Post-UAT fix: disconnect handler now calls `dismiss()` to pop the session view instead of leaving it stuck on the `.idle` spinner.
 **Blockers:** (none)

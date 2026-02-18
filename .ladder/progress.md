@@ -4,7 +4,7 @@
 
 | Step | Description | Status |
 |------|-------------|--------|
-| S1 | Create project.yml and generate Xcode project | pending |
+| S1 | Create project.yml and generate Xcode project | done |
 | S2 | Verify deployment target and project settings | pending |
 | S3 | Build tab view with Connections and Settings tabs | pending |
 | S4 | Add empty state view with CTA and placeholder sheet | pending |

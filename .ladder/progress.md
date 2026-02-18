@@ -69,7 +69,7 @@
 | S2 | Create SSH connection service wrapping Citadel client | done | f868568 | |
 | S3 | Implement connection state machine with bounded timeout | done | 38e472a | |
 | S4 | Add connect action from connection list | done | 870be1c | |
-| S5 | Build SSHSessionView (connected-state placeholder) | done | | |
+| S5 | Build SSHSessionView (connected-state placeholder) | done | fde9429 | |
 | S6 | Implement password prompt flow | done | | |
 | S7 | Add disconnect action | done | | Included in S5 commit |
 | S8 | Implement Keychain password storage with biometric access control | done | | |

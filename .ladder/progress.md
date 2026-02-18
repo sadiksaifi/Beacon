@@ -81,3 +81,26 @@
 
 **Decisions:** Steps S7, S9, S11 were implemented inline within S5's SSHSessionView and subview files rather than as separate commits, since the view code was written holistically. Post-UAT fix: disconnect handler now calls `dismiss()` to pop the session view instead of leaving it stuck on the `.idle` spinner.
 **Blockers:** (none)
+
+## L-04: Host Key Verification & Trust
+
+**Status:** in-progress
+**Started:** 2026-02-18
+**Completed:**
+
+| Step | Description | Status | Commit | Notes |
+|------|-------------|--------|--------|-------|
+| S1 | Remove Phase 3's auto-accept host key behavior | pending | | |
+| S2 | Define trust decision model and host key types | pending | | |
+| S3 | Implement host key callback in SSH connection service | pending | | |
+| S4 | Implement fingerprint comparison logic | pending | | |
+| S5 | Implement known hosts Keychain storage | pending | | |
+| S6 | Implement Trust Once in-memory behavior | pending | | |
+| S7 | Build unknown host trust prompt UI | pending | | |
+| S8 | Build mismatch warning UI | pending | | |
+| S9 | Add VoiceOver labels to all prompt elements | pending | | |
+| S10 | Write integration tests against Docker harness | pending | | |
+| S11 | Execute UAT checklist | pending | | |
+
+**Decisions:**
+**Blockers:**

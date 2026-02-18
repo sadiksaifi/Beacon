@@ -50,7 +50,7 @@ Implement a phase spec one step at a time with plan mode, commit discipline, pro
 1. Acceptance criteria verified with evidence → 2. progress.md updated (status "done") → 3. Atomic commit (code + progress.md) → 4. SHA recorded in progress.md → **THEN** proceed to next step
 
 **After All Steps (Phase Completion):**
-1. Exit criteria verified → 2. progress.md finalized (status "done", Completed date) → 3. OVERVIEW.md Phase Registry updated → 4. Final commit (progress.md + OVERVIEW.md) → **THEN** suggest next phase
+1. Non-UAT exit criteria verified → 2. UAT checklist presented to user → 3. User confirms UAT pass → 4. progress.md finalized → 5. OVERVIEW.md updated → 6. Final commit → **THEN** suggest next phase
 
 ## Hard Gates
 
@@ -84,6 +84,10 @@ STEP COMPLETION: A step is NOT complete until: (1) acceptance criteria verified 
 
 <HARD-GATE>
 PHASE COMPLETION: A phase is NOT complete until: (1) progress.md finalized with status "done" and Completed date, (2) OVERVIEW.md Phase Registry updated with status "done", (3) final commit made containing both progress.md + OVERVIEW.md. Do NOT print next-phase suggestion until all three are confirmed.
+</HARD-GATE>
+
+<HARD-GATE>
+UAT HANDOFF: UAT (User Acceptance Testing) is performed by the human, not the agent. You MUST present UAT checklist items from spec Section 8 to the user and wait for their pass/fail response. Do NOT self-validate UAT items. Do NOT mark the phase as "done" without user UAT confirmation.
 </HARD-GATE>
 
 ## Pre-Execution Checklist
@@ -177,10 +181,12 @@ After implementing S<N>:
 **CRITICAL — Phase Completion Protocol:** After the last step, the plan MUST include:
 ```
 After all steps complete:
-  1. Validate all exit criteria from spec
-  2. Update progress.md: phase status "done", Completed date, Decisions, Blockers
-  3. Update OVERVIEW.md Phase Registry: set phase status to "done"
-  4. Final commit: stage progress.md + OVERVIEW.md together
+  1. Validate non-UAT exit criteria from spec
+  2. Present UAT checklist (spec Section 8) to user for manual testing
+  3. Wait for user UAT confirmation before proceeding
+  4. Update progress.md: phase status "done", Completed date, Decisions, Blockers
+  5. Update OVERVIEW.md Phase Registry: set phase status to "done"
+  6. Final commit: stage progress.md + OVERVIEW.md together
      Message: chore(L<N>): complete phase execution
 ```
 
@@ -253,11 +259,34 @@ Return to Step 8 for the next step. If all steps complete, proceed to Phase 4.
 
 ### Phase 4: Phase Completion
 
-#### Step 11 — Validate Exit Criteria
+#### Step 11 — Validate Exit Criteria and UAT Handoff
 
-Check each exit criterion from the spec. If any criterion fails:
+**A. Validate non-UAT exit criteria:**
+
+Check each exit criterion from the spec (excluding "UAT checklist items pass"). If any criterion fails:
 1. Print which criteria failed
 2. Ask the user whether to fix now or mark as blocked
+
+**B. Present UAT checklist to user:**
+
+Extract all UAT items from the spec's Section 8 (UAT Checklist) and present them to the user:
+
+```
+Phase L-<N> implementation complete. Please perform these UAT checks:
+
+- [ ] UAT-1: description
+- [ ] UAT-2: description
+- [ ] ...
+
+Mark each item pass/fail. I'll wait for your results before finalizing the phase.
+```
+
+Do NOT self-validate UAT items. Do NOT assume they pass. Do NOT proceed to Step 12 until the user responds.
+
+**C. Process UAT results:**
+
+- If all UAT items pass → proceed to Step 12
+- If any UAT items fail → ask user whether to fix now or mark as blocked in progress.md Blockers
 
 #### Step 12 — Finalize Progress and OVERVIEW
 
@@ -318,6 +347,7 @@ Print:
 | Continuing past failed entry criteria | Building on unstable foundation | STOP and resolve prerequisites first |
 | Running medium/large steps inline | Context rot degrades later steps | Delegate via Task tool (Hard Gate) |
 | Sending file paths instead of content to sub-agent | Sub-agent wastes turns reading files | Inline ALL context in the prompt |
+| Self-validating UAT items | UAT is user acceptance testing — only humans can accept | Present UAT checklist to user and wait for response (UAT HANDOFF hard gate) |
 
 ## Red Flags — STOP
 
@@ -333,6 +363,7 @@ Print:
 | "The sub-agent might miss context" | That's why you package full context and verify independently after |
 | "I'll commit everything at the end" | Each step gets its own atomic commit — STEP COMPLETION hard gate |
 | "OVERVIEW.md can wait" | Phase is NOT complete until OVERVIEW.md is committed — PHASE COMPLETION hard gate |
+| "The UAT items are straightforward, I can verify them myself" | UAT is human testing by definition — present the checklist and wait (UAT HANDOFF hard gate) |
 
 ## Integration
 

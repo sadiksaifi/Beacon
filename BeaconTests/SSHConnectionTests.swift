@@ -42,6 +42,23 @@ struct SSHConnectionTests {
         }
     }
 
+    /// Auto-resolves any pending host key challenge with `.trustOnce`.
+    ///
+    /// Polls the service until a challenge appears, the connection completes,
+    /// or the connection fails. If a challenge is found, it is resolved so that
+    /// the handshake can proceed without blocking the test.
+    @MainActor
+    private func autoResolveHostKeyChallenge(for service: SSHConnectionService) async throws {
+        for _ in 0..<50 {
+            if service.pendingHostKeyChallenge != nil { break }
+            if service.status == .connected || service.status.isFailed { return }
+            try await Task.sleep(for: .milliseconds(100))
+        }
+        if service.pendingHostKeyChallenge != nil {
+            service.resolveHostKeyChallenge(.trustOnce)
+        }
+    }
+
     @Test @MainActor func connectWithCorrectPassword() async throws {
         try #require(await isHarnessAvailable(), "Docker harness not reachable — skipping")
 
@@ -51,8 +68,14 @@ struct SSHConnectionTests {
         service.connect(host: host, port: port, username: username, password: password)
         #expect(service.status == .connecting)
 
+        // Resolve host key challenge so the handshake can proceed
+        try await autoResolveHostKeyChallenge(for: service)
+
         // Wait for connection to complete
-        try await Task.sleep(for: .seconds(5))
+        for _ in 0..<50 {
+            if service.status == .connected || service.status.isFailed { break }
+            try await Task.sleep(for: .milliseconds(100))
+        }
 
         #expect(service.status == .connected)
         await service.disconnect()
@@ -67,8 +90,14 @@ struct SSHConnectionTests {
 
         service.connect(host: host, port: port, username: username, password: "wrongpassword")
 
+        // Resolve host key challenge so the handshake can proceed to auth
+        try await autoResolveHostKeyChallenge(for: service)
+
         // Wait for auth failure
-        try await Task.sleep(for: .seconds(5))
+        for _ in 0..<50 {
+            if service.status.isFailed { break }
+            try await Task.sleep(for: .milliseconds(100))
+        }
 
         if case .failed(let message) = service.status {
             #expect(message == "Authentication failed")
@@ -85,8 +114,14 @@ struct SSHConnectionTests {
 
         service.connect(host: host, port: port, username: username, password: password)
 
+        // Resolve host key challenge so the handshake can proceed
+        try await autoResolveHostKeyChallenge(for: service)
+
         // Wait for connection
-        try await Task.sleep(for: .seconds(5))
+        for _ in 0..<50 {
+            if service.status == .connected || service.status.isFailed { break }
+            try await Task.sleep(for: .milliseconds(100))
+        }
         #expect(service.status == .connected)
 
         await service.disconnect()

@@ -98,8 +98,8 @@
 | S6 | Implement Trust Once in-memory behavior | done | 12c5b02 | |
 | S7 | Build unknown host trust prompt UI | done | 5db67ed | |
 | S8 | Build mismatch warning UI | done | 3ac7918 | |
-| S9 | Add VoiceOver labels to all prompt elements | done | | Most labels added inline in S7/S8; S9 adds mismatch announcement |
-| S10 | Write integration tests against Docker harness | pending | | |
+| S9 | Add VoiceOver labels to all prompt elements | done | f44fecd | Most labels added inline in S7/S8; S9 adds mismatch announcement |
+| S10 | Write integration tests against Docker harness | done | | 6 unit tests pass; integration tests require Docker harness |
 | S11 | Execute UAT checklist | pending | | |
 
 **Decisions:**

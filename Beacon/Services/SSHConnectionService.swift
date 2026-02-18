@@ -45,7 +45,9 @@ final class SSHConnectionService {
 
     // MARK: - Private State
 
-    private var client: SSHClient?
+    /// The underlying Citadel SSH client. Exposed as read-only so that
+    /// `TerminalIOBridge` can open shell channels on it.
+    private(set) var client: SSHClient?
     private var connectTask: Task<Void, Never>?
     private var pendingContinuation: CheckedContinuation<TrustDecision, Never>?
 

@@ -24,6 +24,8 @@ targets:
       - Beacon
     dependencies:
       - package: Citadel
+      - framework: Vendor/GhosttyKit.xcframework
+        embed: false
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.beacon.app

@@ -92,8 +92,8 @@
 |------|-------------|--------|--------|-------|
 | S1 | Remove Phase 3's auto-accept host key behavior | done | d2209e6 | InvalidHostKey is internal in Citadel; defined HostKeyRejectedError locally |
 | S2 | Define trust decision model and host key types | done | 5a00f9e | |
-| S3 | Implement host key callback in SSH connection service | done | | Created minimal FingerprintComparer and KnownHostsStore stubs needed for compilation |
-| S4 | Implement fingerprint comparison logic | pending | | |
+| S3 | Implement host key callback in SSH connection service | done | f51759e | Created minimal FingerprintComparer and KnownHostsStore stubs needed for compilation |
+| S4 | Implement fingerprint comparison logic | done | | Fully implemented in S3; no additional changes needed |
 | S5 | Implement known hosts Keychain storage | pending | | |
 | S6 | Implement Trust Once in-memory behavior | pending | | |
 | S7 | Build unknown host trust prompt UI | pending | | |

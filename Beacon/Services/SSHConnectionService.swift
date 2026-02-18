@@ -121,7 +121,7 @@ final class SSHConnectionService {
                 }
             } catch {
                 timeoutTask.cancel()
-                self.status = .failed(message: SSHErrorMapper.message(for: error))
+                self.status = .failed(message: SSHErrorMapper.message(for: error, context: .password))
             }
         }
     }
@@ -186,7 +186,7 @@ final class SSHConnectionService {
                 }
             } catch {
                 timeoutTask.cancel()
-                self.status = .failed(message: SSHErrorMapper.message(for: error))
+                self.status = .failed(message: SSHErrorMapper.message(for: error, context: .key))
             }
         }
     }

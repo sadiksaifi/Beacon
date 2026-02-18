@@ -3,10 +3,21 @@ import Foundation
 import NIOCore
 import NIOPosix
 
+/// The authentication context used to tailor error messages.
+enum SSHAuthContext {
+    case password
+    case key
+}
+
 /// Maps SSH and network errors to human-readable messages.
 enum SSHErrorMapper {
     /// Returns a user-facing error message for the given error.
-    static func message(for error: Error) -> String {
+    ///
+    /// - Parameters:
+    ///   - error: The error to map.
+    ///   - context: The authentication context, used to provide more specific
+    ///     guidance for authentication failures.
+    static func message(for error: Error, context: SSHAuthContext? = nil) -> String {
         // Custom timeout error
         if error is ConnectionTimeoutError {
             return "Connection timed out"
@@ -19,13 +30,13 @@ enum SSHErrorMapper {
 
         // Citadel authentication failures
         if error is AuthenticationFailed {
-            return "Authentication failed"
+            return authFailureMessage(for: context)
         }
 
         if let clientError = error as? SSHClientError,
             clientError == .allAuthenticationOptionsFailed
         {
-            return "Authentication failed"
+            return authFailureMessage(for: context)
         }
 
         // NIO connection errors — unwrap and inspect underlying failures
@@ -54,7 +65,7 @@ enum SSHErrorMapper {
         if description.localizedStandardContains("authentication")
             || description.localizedStandardContains("auth fail")
         {
-            return "Authentication failed"
+            return authFailureMessage(for: context)
         }
 
         // Generic fallback
@@ -62,6 +73,15 @@ enum SSHErrorMapper {
     }
 
     // MARK: - Private Helpers
+
+    private static func authFailureMessage(for context: SSHAuthContext?) -> String {
+        switch context {
+        case .key:
+            "Key authentication failed — the server may not have your public key in authorized_keys."
+        case .password, .none:
+            "Authentication failed"
+        }
+    }
 
     private static func mapNIOConnectionError(_ error: NIOConnectionError) -> String {
         // Check each underlying connection error

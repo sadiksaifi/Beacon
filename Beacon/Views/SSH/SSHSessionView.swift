@@ -95,6 +95,25 @@ struct SSHSessionView: View {
             }
             .interactiveDismissDisabled()
         }
+        .sheet(
+            item: Binding<PendingHostKeyChallenge?>(
+                get: {
+                    guard let pending = connectionService.pendingHostKeyChallenge,
+                        pending.comparison == .mismatch
+                    else { return nil }
+                    return pending
+                },
+                set: { _ in }
+            )
+        ) { pending in
+            MismatchWarningView(
+                challenge: pending.challenge,
+                storedFingerprint: pending.storedFingerprint ?? ""
+            ) { decision in
+                connectionService.resolveHostKeyChallenge(decision)
+            }
+            .interactiveDismissDisabled()
+        }
         .onChange(of: connectionService.status) { _, newStatus in
             announceStateChange(newStatus)
 

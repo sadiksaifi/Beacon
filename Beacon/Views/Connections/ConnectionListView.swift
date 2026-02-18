@@ -11,12 +11,12 @@ struct ConnectionListView: View {
     var body: some View {
         List {
             ForEach(connections) { connection in
-                ConnectionRow(connection: connection)
-                    .contentShape(.rect)
-                    .onTapGesture {
-                        selectedConnection = connection
-                    }
-                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                Button {
+                    selectedConnection = connection
+                } label: {
+                    ConnectionRow(connection: connection)
+                }
+                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button("Delete", systemImage: "trash", role: .destructive) {
                             delete(connection)
                         }

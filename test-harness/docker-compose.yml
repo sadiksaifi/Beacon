@@ -1,0 +1,22 @@
+services:
+  ssh-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: beacon-ssh-test
+    ports:
+      - "2222:22"
+    volumes:
+      # Bind-mount the keys/ directory as .ssh for the test user.
+      # Drop a public key into keys/authorized_keys on the host to
+      # enable public key authentication without rebuilding the image.
+      - ./keys:/home/testuser/.ssh
+    healthcheck:
+      # Probe the SSH port directly inside the container.
+      # nc -z exits 0 as soon as the TCP port accepts a connection.
+      test: ["CMD", "nc", "-z", "localhost", "22"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 3s
+    restart: unless-stopped

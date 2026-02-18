@@ -99,6 +99,7 @@ private struct KeyGenerationInputForm: View {
         Form {
             Section {
                 TextField("Label", text: $label)
+                    .accessibilityLabel("Key label")
             } footer: {
                 Text("A name to identify this key, such as \"Work laptop\".")
             }
@@ -110,6 +111,7 @@ private struct KeyGenerationInputForm: View {
                             .tag(keyType)
                     }
                 }
+                .accessibilityLabel("Key algorithm")
             } footer: {
                 Text("Ed25519 is recommended for most use cases.")
             }
@@ -117,6 +119,7 @@ private struct KeyGenerationInputForm: View {
             Section {
                 Button("Generate", systemImage: "wand.and.stars.inverse", action: onGenerate)
                     .disabled(label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .accessibilityLabel("Generate SSH key")
             }
         }
     }

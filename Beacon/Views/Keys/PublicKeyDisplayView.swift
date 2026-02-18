@@ -54,6 +54,8 @@ private struct PublicKeyText: View {
         Text(text)
             .font(.system(.body, design: .monospaced))
             .textSelection(.enabled)
+            .accessibilityLabel("Public key")
+            .accessibilityValue(text)
     }
 }
 

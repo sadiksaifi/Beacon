@@ -152,8 +152,10 @@ private struct ImportSourceView: View {
         Form {
             Section {
                 Button("Paste from Clipboard", systemImage: "doc.on.clipboard", action: onPaste)
+                    .accessibilityLabel("Paste SSH key from clipboard")
 
                 Button("Import from Files", systemImage: "folder", action: onShowFileImporter)
+                    .accessibilityLabel("Import SSH key from Files app")
             } footer: {
                 Text("Select the source of your SSH private key.")
             }
@@ -185,6 +187,7 @@ private struct ParsedKeyForm: View {
 
             Section {
                 TextField("Label", text: $label)
+                    .accessibilityLabel("Key label")
             } footer: {
                 Text("A name to identify this key, such as \"Work laptop\".")
             }
@@ -192,6 +195,7 @@ private struct ParsedKeyForm: View {
             Section {
                 Button("Import", systemImage: "square.and.arrow.down", action: onImport)
                     .disabled(trimmedLabel.isEmpty)
+                    .accessibilityLabel("Import SSH key")
             }
         }
     }
@@ -220,11 +224,13 @@ private struct EncryptedKeyForm: View {
 
             Section {
                 SecureField("Passphrase", text: $passphrase)
+                    .accessibilityLabel("Key passphrase")
             }
 
             Section {
                 Button("Decrypt", systemImage: "lock.open", action: onDecrypt)
                     .disabled(passphrase.isEmpty)
+                    .accessibilityLabel("Decrypt SSH key")
             }
         }
     }

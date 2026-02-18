@@ -22,6 +22,9 @@ final class Connection {
     /// The authentication method to use.
     var authMethod: AuthMethod = AuthMethod.password
 
+    /// The UUID of the selected SSH key when using key-based authentication.
+    var selectedKeyID: UUID? = nil
+
     init(label: String = "", host: String, port: Int = 22, username: String, authMethod: AuthMethod = .password) {
         self.label = label
         self.host = host

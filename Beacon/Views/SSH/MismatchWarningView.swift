@@ -1,3 +1,4 @@
+import Accessibility
 import SwiftUI
 
 /// Sheet presented when a host's key has changed since the last trusted connection.
@@ -63,5 +64,10 @@ struct MismatchWarningView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .presentationDetents([.large])
+        .onAppear {
+            AccessibilityNotification.Announcement(
+                "Warning: Host key has changed for \(challenge.hostname). Review before continuing."
+            ).post()
+        }
     }
 }

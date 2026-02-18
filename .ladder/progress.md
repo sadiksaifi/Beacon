@@ -97,8 +97,8 @@
 | S5 | Implement known hosts Keychain storage | done | 0476204 | |
 | S6 | Implement Trust Once in-memory behavior | done | 12c5b02 | |
 | S7 | Build unknown host trust prompt UI | done | 5db67ed | |
-| S8 | Build mismatch warning UI | done | | |
-| S9 | Add VoiceOver labels to all prompt elements | pending | | |
+| S8 | Build mismatch warning UI | done | 3ac7918 | |
+| S9 | Add VoiceOver labels to all prompt elements | done | | Most labels added inline in S7/S8; S9 adds mismatch announcement |
 | S10 | Write integration tests against Docker harness | pending | | |
 | S11 | Execute UAT checklist | pending | | |
 

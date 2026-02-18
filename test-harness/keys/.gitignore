@@ -1,0 +1,2 @@
+# Ignore real public keys — do not commit credentials.
+authorized_keys

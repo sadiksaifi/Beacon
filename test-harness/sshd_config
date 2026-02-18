@@ -1,0 +1,32 @@
+# Beacon SSH Test Harness — sshd configuration
+
+Port 22
+
+# Host key files (generated at build time by ssh-keygen -A)
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+# Authentication
+PasswordAuthentication yes
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys
+
+# Security
+PermitRootLogin no
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+
+# PAM is required for password auth to work on Ubuntu
+UsePAM yes
+
+# Logging to stderr (Docker captures it)
+SyslogFacility AUTH
+LogLevel INFO
+
+# Environment
+AcceptEnv LANG LC_*
+PrintMotd no
+
+# Subsystems
+Subsystem sftp /usr/lib/openssh/sftp-server

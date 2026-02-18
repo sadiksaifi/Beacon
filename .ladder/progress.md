@@ -48,7 +48,7 @@
 
 | Step | Description | Status | Commit | Notes |
 |------|-------------|--------|--------|-------|
-| S1 | Create Dockerfile with OpenSSH, tmux, bash, and test user | pending | | |
+| S1 | Create Dockerfile with OpenSSH, tmux, bash, and test user | done | | |
 | S2 | Create docker-compose.yml with port mapping and health check | pending | | |
 | S3 | Create start-harness.sh and stop-harness.sh scripts | pending | | |
 | S4 | Verify harness connectivity | pending | | |

@@ -27,9 +27,9 @@ SwiftUI app shell with tab-based navigation, backed by SwiftData for connection 
 ## Phase Registry
 | # | File | Status |
 |---|------|--------|
-| 0 | L-00-project-bootstrap-app-shell.md | pending |
-| 1 | L-01-connection-data-model-crud.md | pending |
-| 2 | L-02-docker-test-harness.md | pending |
+| 0 | L-00-project-bootstrap-app-shell.md | done |
+| 1 | L-01-connection-data-model-crud.md | done |
+| 2 | L-02-docker-test-harness.md | in-progress |
 | 3 | L-03-ssh-connect-password-auth.md | pending |
 | 4 | L-04-host-key-verification-trust.md | pending |
 | 5 | L-05-ssh-key-management-auth.md | pending |

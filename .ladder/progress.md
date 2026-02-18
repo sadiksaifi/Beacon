@@ -84,9 +84,9 @@
 
 ## L-04: Host Key Verification & Trust
 
-**Status:** in-progress
+**Status:** done
 **Started:** 2026-02-18
-**Completed:**
+**Completed:** 2026-02-18
 
 | Step | Description | Status | Commit | Notes |
 |------|-------------|--------|--------|-------|
@@ -99,8 +99,8 @@
 | S7 | Build unknown host trust prompt UI | done | 5db67ed | |
 | S8 | Build mismatch warning UI | done | 3ac7918 | |
 | S9 | Add VoiceOver labels to all prompt elements | done | f44fecd | Most labels added inline in S7/S8; S9 adds mismatch announcement |
-| S10 | Write integration tests against Docker harness | done | | 6 unit tests pass; integration tests require Docker harness |
-| S11 | Execute UAT checklist | pending | | |
+| S10 | Write integration tests against Docker harness | done | 7c81c76 | 6 unit tests pass; integration tests require Docker harness |
+| S11 | Execute UAT checklist | done | | UAT-1 through UAT-11 passed after simulator Keychain reset |
 
-**Decisions:**
-**Blockers:**
+**Decisions:** S3 created minimal stubs for FingerprintComparer and KnownHostsStore to compile; fleshed out in S4-S6. S4 had no additional changes needed (fully implemented in S3). InvalidHostKey is internal in Citadel; defined HostKeyRejectedError locally. Most VoiceOver labels added inline in S7/S8 rather than as a separate S9 pass.
+**Blockers:** (none)

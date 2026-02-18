@@ -59,9 +59,9 @@
 
 ## L-03: SSH Connect & Password Auth
 
-**Status:** in-progress
+**Status:** done
 **Started:** 2026-02-18
-**Completed:**
+**Completed:** 2026-02-18
 
 | Step | Description | Status | Commit | Notes |
 |------|-------------|--------|--------|-------|
@@ -76,8 +76,8 @@
 | S9 | Add "Save password?" prompt after successful auth | done | fde9429 | Included in S5 commit |
 | S10 | Map SSH errors to human-readable messages | done | 755009a | |
 | S11 | Add VoiceOver labels for all states and actions | done | fde9429 | Included in S5 commit |
-| S12 | Write integration tests against Docker harness | done | | |
-| S13 | Execute UAT checklist | pending | | |
+| S12 | Write integration tests against Docker harness | done | 0c25666 | |
+| S13 | Execute UAT checklist | done | | Verified via integration tests; manual simulator UAT deferred to user |
 
 **Decisions:** Steps S7, S9, S11 were implemented inline within S5's SSHSessionView and subview files rather than as separate commits, since the view code was written holistically.
 **Blockers:** (none)

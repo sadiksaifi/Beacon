@@ -68,7 +68,7 @@
 | S1 | Add Citadel SPM dependency | done | de7a3db | |
 | S2 | Create SSH connection service wrapping Citadel client | done | f868568 | |
 | S3 | Implement connection state machine with bounded timeout | done | 38e472a | |
-| S4 | Add connect action from connection list | done | | |
+| S4 | Add connect action from connection list | done | 870be1c | |
 | S5 | Build SSHSessionView (connected-state placeholder) | done | | |
 | S6 | Implement password prompt flow | done | | |
 | S7 | Add disconnect action | done | | Included in S5 commit |

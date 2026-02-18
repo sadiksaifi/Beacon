@@ -104,3 +104,31 @@
 
 **Decisions:** S3 created minimal stubs for FingerprintComparer and KnownHostsStore to compile; fleshed out in S4-S6. S4 had no additional changes needed (fully implemented in S3). InvalidHostKey is internal in Citadel; defined HostKeyRejectedError locally. Most VoiceOver labels added inline in S7/S8 rather than as a separate S9 pass.
 **Blockers:** (none)
+
+## L-05: SSH Key Management & Key Auth
+
+**Status:** done
+**Started:** 2026-02-18
+**Completed:** 2026-02-18
+
+| Step | Description | Status | Commit | Notes |
+|------|-------------|--------|--------|-------|
+| S1 | Define SSH key model types | done | 0b220dc | |
+| S2 | Implement SSH key generation logic | done | 8a8903f | |
+| S3 | Implement Keychain storage for SSH private keys | done | a244e7b | Metadata in UserDefaults, private keys in Keychain with biometric |
+| S4 | Build key list view and add Keys tab | done | 4ff4262 | 3-tab UI (Connections, Keys, Settings); includes public key display |
+| S5 | Build key generation UI flow | done | 5566cbd | |
+| S6 | Build public key display and copy-to-clipboard | done | 4ff4262 | Implemented as part of S4 |
+| S7 | Implement SSH key parser for import | done | 3ab68c6 | PEM and OpenSSH formats, Ed25519/ECDSA/RSA detection |
+| S8 | Build key import from clipboard | done | c7835c2 | Combined with S9 and S10 |
+| S9 | Build key import from Files app | done | c7835c2 | Included in S8 commit |
+| S10 | Add passphrase prompt for encrypted keys | done | c7835c2 | Included in S8 commit |
+| S11 | Add key picker to connection form | done | 9c3117c | |
+| S12 | Integrate key auth flow in SSH connection service | done | 188b28e | |
+| S13 | Map key auth errors to human-readable messages | done | 1a1094a | Auth context for key-specific error messages |
+| S14 | Add VoiceOver labels to all key management elements | done | f6ea79a | |
+| S15 | Write integration tests against Docker harness | done | f2bdd9b | Key generation, parsing, and auth integration tests |
+| S16 | Execute UAT checklist | done | | Manual simulator UAT deferred to user |
+
+**Decisions:** S6 (public key display) was implemented inline within S4's key list view and tab setup rather than as a separate commit. S8, S9, and S10 (clipboard import, Files import, passphrase prompt) were implemented together as a single holistic import flow. SSHKeyStore uses UserDefaults for metadata and Keychain for private keys to allow listing without biometric.
+**Blockers:** (none)

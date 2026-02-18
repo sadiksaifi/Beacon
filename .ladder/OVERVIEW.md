@@ -32,7 +32,7 @@ SwiftUI app shell with tab-based navigation, backed by SwiftData for connection 
 | 2 | L-02-docker-test-harness.md | done |
 | 3 | L-03-ssh-connect-password-auth.md | done |
 | 4 | L-04-host-key-verification-trust.md | done |
-| 5 | L-05-ssh-key-management-auth.md | pending |
+| 5 | L-05-ssh-key-management-auth.md | done |
 | 6 | L-06-libghostty-terminal-surface.md | pending |
 | 7 | L-07-terminal-resize-orientation.md | pending |
 | 8 | L-08-keyboard-accessory-bar.md | pending |

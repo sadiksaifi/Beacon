@@ -5,7 +5,8 @@ import SwiftUI
 ///
 /// On appearance, checks Keychain for a stored password. If found, connects
 /// directly. If not, presents a password prompt sheet.
-/// Phase 6 will replace the connected-state placeholder with a terminal surface.
+/// When connected, displays the terminal surface backed by libghostty and
+/// bridges I/O between the SSH channel and the terminal emulator.
 struct SSHSessionView: View {
     @Environment(SSHConnectionService.self) private var connectionService
     @Environment(SSHKeyStore.self) private var keyStore
@@ -13,6 +14,7 @@ struct SSHSessionView: View {
 
     let connection: Connection
 
+    @State private var ioBridge = TerminalIOBridge()
     @State private var showPasswordPrompt = false
     @State private var showSavePasswordAlert = false
     @State private var pendingPassword: String?
@@ -32,11 +34,8 @@ struct SSHSessionView: View {
                 ConnectingStateView()
 
             case .connected:
-                ConnectedStateView {
-                    Task {
-                        await connectionService.disconnect()
-                        dismiss()
-                    }
+                TerminalSurface(connection: connection) { terminalView in
+                    startIOBridge(terminalView: terminalView)
                 }
 
             case .failed(let message):
@@ -47,7 +46,9 @@ struct SSHSessionView: View {
         }
         .navigationTitle(connection.label.isEmpty ? connection.host : connection.label)
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(connectionService.status == .connecting)
+        .navigationBarBackButtonHidden(
+            connectionService.status == .connecting || connectionService.status == .connected
+        )
         .toolbar {
             if connectionService.status == .connecting {
                 ToolbarItem(placement: .cancellationAction) {
@@ -55,6 +56,14 @@ struct SSHSessionView: View {
                         connectionService.cancel()
                         dismiss()
                     }
+                }
+            }
+            if connectionService.status == .connected {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Disconnect", systemImage: "xmark.circle") {
+                        disconnectSession()
+                    }
+                    .accessibilityLabel("Disconnect from server")
                 }
             }
         }
@@ -122,6 +131,12 @@ struct SSHSessionView: View {
                 showSavePasswordAlert = true
             }
         }
+        .onChange(of: ioBridge.status) { _, newBridgeStatus in
+            handleBridgeStatusChange(newBridgeStatus)
+        }
+        .onDisappear {
+            ioBridge.stop()
+        }
         .task {
             await initiateConnection()
         }
@@ -175,6 +190,8 @@ struct SSHSessionView: View {
     }
 
     private func retryConnection() {
+        ioBridge.stop()
+        ioBridge = TerminalIOBridge()
         usedKeychainPassword = false
         pendingPassword = nil
         Task {
@@ -184,6 +201,48 @@ struct SSHSessionView: View {
 
     private func handlePasswordPromptDismiss() {
         if connectionService.status == .idle && pendingPassword == nil {
+            dismiss()
+        }
+    }
+
+    // MARK: - I/O Bridge
+
+    /// Starts the I/O bridge between the SSH client and the terminal emulator.
+    ///
+    /// Called by `TerminalSurface` once the ghostty surface and PTY file
+    /// descriptor are ready. The bridge relays data bidirectionally between
+    /// the SSH channel and the terminal's PTY.
+    private func startIOBridge(terminalView: TerminalView) {
+        guard let client = connectionService.client else { return }
+        ioBridge.start(
+            client: client,
+            ptyFD: terminalView.ptyFileDescriptor
+        )
+    }
+
+    /// Responds to I/O bridge status changes.
+    ///
+    /// When the bridge disconnects or encounters an error, the session view
+    /// transitions to the failed state so the user sees feedback instead of
+    /// a frozen terminal.
+    private func handleBridgeStatusChange(_ newStatus: TerminalIOBridge.Status) {
+        switch newStatus {
+        case .disconnected(let reason):
+            guard connectionService.status == .connected else { return }
+            connectionService.fail(message: "Connection lost: \(reason)")
+        case .error(let message):
+            guard connectionService.status == .connected else { return }
+            connectionService.fail(message: message)
+        case .idle, .running:
+            break
+        }
+    }
+
+    /// Stops the I/O bridge and disconnects the SSH session.
+    private func disconnectSession() {
+        ioBridge.stop()
+        Task {
+            await connectionService.disconnect()
             dismiss()
         }
     }

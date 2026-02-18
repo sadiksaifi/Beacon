@@ -132,3 +132,30 @@
 
 **Decisions:** S6 (public key display) was implemented inline within S4's key list view and tab setup rather than as a separate commit. S8, S9, and S10 (clipboard import, Files import, passphrase prompt) were implemented together as a single holistic import flow. SSHKeyStore uses UserDefaults for metadata and Keychain for private keys to allow listing without biometric.
 **Blockers:** (none)
+
+## L-06: libghostty Terminal Surface
+
+**Status:** done
+**Started:** 2026-02-18
+**Completed:** 2026-02-18
+
+| Step | Description | Status | Commit | Notes |
+|------|-------------|--------|--------|-------|
+| P0 | Complete L5 phase execution | done | 09c418a | Prerequisite |
+| S1 | Add patched GhosttyKit.xcframework with SocketPairPty | done | 3d5f0c0 | iOS ARM64 + simulator + macOS slices; SocketPairPty enables external I/O bridging |
+| S2 | Document GhosttyKit build steps | done | 4e06ef6 | Build documentation for reproducible framework vendor |
+| S3 | Add GhosttyKit.xcframework to Xcode project | done | fc0f938 | XcodeGen project.yml updated; GhosttyRuntime singleton for global ghostty app lifecycle |
+| S4 | Create TerminalView UIView subclass with Metal layer | done | ffc8a64 | CAMetalLayer hosting ghostty surface |
+| S5 | Create TerminalSurface UIViewRepresentable wrapper | done | 2ff3be1 | SwiftUI wrapper around TerminalView |
+| S6 | Create TerminalIOBridge for SSH-to-terminal I/O relay | done | c2f823e | Bidirectional SSH ↔ terminal relay using structured concurrency |
+| S7 | Wire terminal surface into SSH connection flow | done | a4d74c6 | Replaces ConnectedStateView placeholder; connection-loss detection and error UI transitions handled via handleBridgeStatusChange |
+| S8 | Connection-loss detection and error state | done | a4d74c6 | Covered by S7 — handleBridgeStatusChange drives error UI transitions |
+| S9 | Add keyboard input capture to TerminalView | done | 1f22e26 | UIKeyInput for software keyboard; UIPress for hardware keyboards |
+| S10 | Add keyboard show/hide resize to TerminalSurface | done | 0939506 | Animated transitions on keyboard frame changes |
+| S11 | Add VoiceOver announcement for terminal session start | done | 1c089cc | Accessibility labels and session-start announcement |
+| S12 | Add unit tests for I/O bridge and keyboard resize | done | a82221b | I/O bridge state machine and keyboard resize calculation tests |
+| S13 | Add terminal I/O bridge integration tests | done | cf35ddc | Bridge startup, command round-trip, and disconnection detection |
+| S14 | Execute UAT checklist and update progress tracking | done | | This step |
+
+**Decisions:** S8 (connection-loss error state) was fully covered by S7 — the handleBridgeStatusChange method in the connection flow already drives all error UI transitions on bridge disconnection, requiring no separate commit. S3 also introduced the GhosttyRuntime singleton for managing the global ghostty app lifecycle, which was a natural fit with the framework integration step.
+**Blockers:** (none)

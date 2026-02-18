@@ -94,8 +94,8 @@
 | S2 | Define trust decision model and host key types | done | 5a00f9e | |
 | S3 | Implement host key callback in SSH connection service | done | f51759e | Created minimal FingerprintComparer and KnownHostsStore stubs needed for compilation |
 | S4 | Implement fingerprint comparison logic | done | 69f029f | Fully implemented in S3; no additional changes needed |
-| S5 | Implement known hosts Keychain storage | done | | |
-| S6 | Implement Trust Once in-memory behavior | pending | | |
+| S5 | Implement known hosts Keychain storage | done | 0476204 | |
+| S6 | Implement Trust Once in-memory behavior | done | | |
 | S7 | Build unknown host trust prompt UI | pending | | |
 | S8 | Build mismatch warning UI | pending | | |
 | S9 | Add VoiceOver labels to all prompt elements | pending | | |

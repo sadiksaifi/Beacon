@@ -9,11 +9,20 @@ import Security
 final class KnownHostsStore {
     private static let serviceName = "com.beacon.ssh"
 
+    /// In-memory cache for trust-once entries (not persisted across app launches).
+    private var sessionTrusted: [String: KnownHostEntry] = [:]
+
     // MARK: - Lookup
 
     /// Looks up a stored host key entry for the given host and port.
+    ///
+    /// Checks session-trusted entries first, then Keychain.
     func lookup(host: String, port: Int) -> KnownHostEntry? {
-        keychainLookup(host: host, port: port)
+        let key = Self.accountKey(host: host, port: port)
+        if let sessionEntry = sessionTrusted[key] {
+            return sessionEntry
+        }
+        return keychainLookup(host: host, port: port)
     }
 
     // MARK: - Save
@@ -80,7 +89,8 @@ final class KnownHostsStore {
 
     /// Trusts a host key for the current session only (not persisted).
     func trustOnce(_ entry: KnownHostEntry) {
-        // Implemented in S6
+        let key = Self.accountKey(host: entry.hostname, port: entry.port)
+        sessionTrusted[key] = entry
     }
 
     // MARK: - Private

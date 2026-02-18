@@ -90,8 +90,8 @@
 
 | Step | Description | Status | Commit | Notes |
 |------|-------------|--------|--------|-------|
-| S1 | Remove Phase 3's auto-accept host key behavior | done | | InvalidHostKey is internal in Citadel; defined HostKeyRejectedError locally |
-| S2 | Define trust decision model and host key types | pending | | |
+| S1 | Remove Phase 3's auto-accept host key behavior | done | d2209e6 | InvalidHostKey is internal in Citadel; defined HostKeyRejectedError locally |
+| S2 | Define trust decision model and host key types | done | | |
 | S3 | Implement host key callback in SSH connection service | pending | | |
 | S4 | Implement fingerprint comparison logic | pending | | |
 | S5 | Implement known hosts Keychain storage | pending | | |
